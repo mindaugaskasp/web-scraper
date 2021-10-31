@@ -13,7 +13,7 @@ class ProductCache
 
     public function __construct()
     {
-        $this->cache = new FilesystemAdapter('products', 3600, $this->getCacheDir());
+        $this->cache = new FilesystemAdapter('products', 1800, $this->getCacheDir());
     }
 
     public function getCacheKeyForProduct(Product $product): string

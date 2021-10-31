@@ -38,23 +38,22 @@ class ScanWebCommand extends Command
         $this->recipient = $emailRecipient;
     }
 
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $output->writeln(sprintf('Scanning. Iteration #%s', ++$this->scanIterations));
+            $output->writeln(sprintf('%s: Scanning. Iteration #%s.', Carbon::now()->toDateTimeString(),  ++$this->scanIterations));
 
             $result = $this->manager->scan();
             if ($result->getProductCount() !== 0) {
-                $output->writeln('Products found.');
+                $output->writeln(sprintf('%s: %s Products found.', Carbon::now()->toDateTimeString(), $result->getProductCount()));
                 $this->parseResult($result);
-            }
-
-            if ($this->manager->isScanOver()) {
-                $output->writeln('Scan finished.');
-                return Command::SUCCESS;
+            } else {
+                $output->writeln(sprintf('%s: No updates found yet.', Carbon::now()->toDateTimeString()));
             }
 
             $rescanTime = $this->manager->getRescanTimeSeconds();
+            $output->writeln(sprintf('%s: Sleeping for %s seconds.', Carbon::now()->toDateTimeString(), $rescanTime));
             sleep($rescanTime);
 
             return $this->execute($input, $output);
@@ -72,7 +71,7 @@ class ScanWebCommand extends Command
         $html = $this->twig->render('index.html', ['products' => $products]);
 
         $this->mailer->send(
-            'Stock update notification',
+            'Stock update notification: ' . Carbon::now()->toDayDateTimeString(),
             $html,
             $this->recipient
         );
