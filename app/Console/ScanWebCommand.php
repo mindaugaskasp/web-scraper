@@ -59,7 +59,7 @@ class ScanWebCommand extends Command
 
             return $this->execute($input, $output);
         } catch (Throwable $e) {
-            $output->writeln('Error: ' . $e->getMessage());
+            $output->writeln('Error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString());
             $this->logger->log($e->getMessage(), MonoLog::ERROR);
 
             return Command::FAILURE;

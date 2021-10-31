@@ -26,7 +26,8 @@ Note: tested on Ubuntu only.
 
 ## Supported stores
 
-1. Skytech
+1. skytech.lt
+2. Varle.lt
 
 ## How to add more stores support
 

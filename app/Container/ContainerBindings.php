@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Container;
 
 use App\Console\ScanWebCommand;
+use App\Services\Cache\ProductCache;
 use App\Services\Logger\Logger;
 use App\Services\Mail\Mailer;
 use App\Services\ScanManager\Manager;
@@ -31,6 +32,7 @@ class ContainerBindings
     {
         $this->container->register(Logger::class, Logger::class);
         $this->container->register(Mailer::class, Mailer::class);
+        $this->container->register(ProductCache::class, ProductCache::class);
 
         $loader = new FilesystemLoader(getcwd() . '/views/email');
         $twig = new Environment($loader, ['cache' => getcwd() . '/storage/cache']);
@@ -52,6 +54,7 @@ class ContainerBindings
     {
         $manager = $this->container
             ->register(Manager::getContainerId(), Manager::class)
+            ->addArgument($this->container->get(ProductCache::class))
             ->addArgument($_ENV['MANAGER_RESCAN_TIME_SECONDS'] ?? 60)
         ;
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services\ScanManager;
 
+use App\Services\Cache\ProductCache;
 use App\Services\Websites\WebsiteInterface;
 
 abstract class AbstractManager implements ScanManagerInterface
@@ -10,10 +11,12 @@ abstract class AbstractManager implements ScanManagerInterface
     protected $scanOver = false;
     protected $websites;
 
+    private $cache;
     private $rescanTimeSeconds;
 
-    public function __construct(int $rescanTimeSeconds)
+    public function __construct(ProductCache $cache, int $rescanTimeSeconds)
     {
+        $this->cache = $cache;
         $this->rescanTimeSeconds = $rescanTimeSeconds;
     }
 
@@ -28,6 +31,11 @@ abstract class AbstractManager implements ScanManagerInterface
     public function getRescanTimeSeconds(): int
     {
         return $this->rescanTimeSeconds;
+    }
+
+    protected function getProductCache(): ProductCache
+    {
+        return $this->cache;
     }
 
     protected function setScanOver(): ScanManagerInterface

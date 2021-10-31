@@ -65,7 +65,7 @@ class SkytechWebsite extends AbstractWebsite
             $fullUrl,
             $price,
             $quantity,
-            self::BASE_URL
+            $children->getBaseHref()
         );
     }
 }
