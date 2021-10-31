@@ -1,10 +1,10 @@
 # Web scanner
 
-----
+Scanner visits online retailer sites and looks for items in inventory by specified keywords. If any items are found in stock - script sends Email notification and plays alert sound - so you don't miss out on a low supply item you want to buy. Currently implemented for Lithuanian retailers, but can be accommodated for any online shop easily.
 
 ## Setup 
 
-Note: tested on Ubuntu only.
+Note: tested on Ubuntu 20.04 only.
 
 1. Change your working dir to this project
 2. Run `sudo apt install sox`
@@ -15,12 +15,22 @@ Note: tested on Ubuntu only.
 7. Set your desired configuration presets for .env file
 8. Start web scan by running `php ./app app:scan:web `
 
+## Architecture
 
-## OS level dependencies
+1. app.php (script entry, bootstraps all application code and starts ScanWebCommand)
+2. ScanWebCommand (initiates scan)
+   1. Manager (iterates over website list and initiates crawling)
+      1. Websites[] (goes over website and fetches stock data)
+   2. Mailer
+   3. Logger
+   4. Notification sound
+   
+## Dependencies
 
 1. PHP 7.2
-2. sendmail (sudo apt-get install sendmail)
-3. Composer dependencies (Twig, Carbon, PHPMailer, various symphony components)
+2. Composer dependencies (Twig, Carbon, PHPMailer, various symphony components)
+3. sox audio library
+4. sendmail library
 
 ## How to Use
 1. Run script as described in `setup` section
@@ -35,4 +45,15 @@ Note: tested on Ubuntu only.
 
 ## How to add more stores support
 
-Simply implement WebsiteInterface compliant object and add it to Manager. Website object is responsible for navigating Crawler object, fetching and parsing necessary data and converting it to ProductInterface object. This object gets formatted into HTMl later on and sent via Email to user.
+Simply implement WebsiteInterface compliant object. All objects ending with `Website` suffix are automatically loaded into Manager object.
+
+## How to use Google SMTP for email notifications
+
+1. Open Google Email settings
+2. Head to Forwarding and POP/IMAP section
+3. Enable IMAP
+4. Head to general Google account settings (https://myaccount.google.com/securityhttps://myaccount.google.com/security)
+5. Disable 2FA if it is enabled and enable low security app usage (proceed at your own risk, or create separate google email account for this.)
+6. Enter Google account password/username into .env file
+
+This way you don't need your email server to handle sending notifications and let your Google account do all the work.

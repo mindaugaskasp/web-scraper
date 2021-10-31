@@ -47,6 +47,10 @@ class Manager extends AbstractManager
         );
     }
 
+    /**
+     * Some retailer sites have crappy search implemented that do not accept multiple keyword search
+     * in those cases multiple requests for each keyword are made instead.
+     */
     private function multipleWebsiteRequests(WebsiteInterface $website, Client $client, Result $result): void
     {
         $urls = $website->getUrls();
