@@ -7,7 +7,7 @@ use App\Services\Websites\WebsiteInterface;
 
 abstract class AbstractManager implements ScanManagerInterface
 {
-    protected $scanOver;
+    protected $scanOver = false;
     protected $websites;
 
     private $rescanTimeSeconds;

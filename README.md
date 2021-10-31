@@ -30,4 +30,4 @@ Note: tested on Ubuntu only.
 
 ## How to add more stores support
 
-Simply implement WebsiteInterface adherant object and add it to Manager. Website object is responsible for navigating Crawler object, fetching and parsing necessary data and converting it to ProductInterface object. This object gets formatted into HTMl later on and sent via Email to user.
+Simply implement WebsiteInterface compliant object and add it to Manager. Website object is responsible for navigating Crawler object, fetching and parsing necessary data and converting it to ProductInterface object. This object gets formatted into HTMl later on and sent via Email to user.

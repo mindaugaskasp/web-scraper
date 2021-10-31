@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Services\Websites\Tech;
+namespace App\Services\Websites;
 
-use App\Services\Websites\AbstractWebsite;
 use App\Services\Websites\Data\Product;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -19,11 +18,6 @@ class SkytechWebsite extends AbstractWebsite
             . 'search.php?sand=1&sort=5a&grp=1&keywords='
             . urlencode($keywords)
             . '&search_in_description=0&pagesize=500&f=86_85';
-    }
-
-    public static function getContainerId(): string
-    {
-        return 'skytech';
     }
 
     public function runCrawler(Crawler $crawler, callable $callback): void
