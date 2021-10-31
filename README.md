@@ -7,10 +7,13 @@
 Note: tested on Ubuntu only.
 
 1. Change your working dir to this project
-2. Install required dependencies by running command `composer install`
-3. Copy configuration file by running command `cp .env.example .env`
-4. Set your desired configuration presets for .env file
-5. Start web scan by running `php ./app app:scan:web `
+2. Run `sudo apt install sox`
+3. Run `sudo apt install libsox-fmt-mp3`
+4. Run `sudo apt-get install sendmail`
+5. Install required dependencies by running command `composer install`
+6. Copy configuration file by running command `cp .env.example .env`
+7. Set your desired configuration presets for .env file
+8. Start web scan by running `php ./app app:scan:web `
 
 
 ## OS level dependencies

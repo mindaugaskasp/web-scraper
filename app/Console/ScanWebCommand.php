@@ -48,6 +48,7 @@ class ScanWebCommand extends Command
             if ($result->getProductCount() !== 0) {
                 $output->writeln(sprintf('%s: %s Products found.', Carbon::now()->toDateTimeString(), $result->getProductCount()));
                 $this->parseResult($result);
+                $this->playSound();
             } else {
                 $output->writeln(sprintf('%s: No updates found yet.', Carbon::now()->toDateTimeString()));
             }
@@ -87,5 +88,12 @@ class ScanWebCommand extends Command
                 )
             );
         }
+    }
+
+    private function playSound(): void
+    {
+        $pathToSoundFile = getcwd() . '/storage/notification.mp3';
+        $cmd = sprintf('play %s repeat 20 vol 100', $pathToSoundFile);
+        exec($cmd . " > /dev/null &");
     }
 }
