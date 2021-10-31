@@ -1,0 +1,24 @@
+<html>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{product.getName}}</td>
+                        <td>{{product.getPrice}}</td>
+                        <td>{{product.getQuantity}}</td>
+                        <td>{{product.getUrl}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,6 @@
+#local files
+.env
+composer.lock
+storage/logs
+storage/cache
+.idea
