@@ -28,6 +28,7 @@ Note: tested on Ubuntu only.
 
 1. skytech.lt
 2. Varle.lt
+3. kilobaitas.lt
 
 ## How to add more stores support
 
