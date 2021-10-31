@@ -45,7 +45,12 @@ class VarleWebsite extends AbstractWebsite
 
                 $price = $node->filter('.price')->first()->text();
                 $name = $node->filter('.title')->first()->text();
-                $url = self::BASE_URL  . $node->filter('.title')->first()->filter('a')->attr('href');
+
+                if ($node->filter('.title')->filter('a')->count() === 0) {
+                    return;
+                }
+
+                $url = self::BASE_URL . $node->filter('.title')->first()->filter('a')->attr('href');
 
                 $product = new Product(
                     $name,

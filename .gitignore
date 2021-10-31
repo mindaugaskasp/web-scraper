@@ -4,4 +4,4 @@ composer.lock
 storage/logs
 storage/cache
 .idea
-.vendor
+vendor
