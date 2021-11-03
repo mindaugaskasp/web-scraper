@@ -7,11 +7,11 @@ use App\Services\Websites\Data\Product;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
-class KilobaitasWebsite extends AbstractWebsite
+class Kaina24Website extends AbstractWebsite
 {
     public static function getHost(): string
     {
-        return 'www.kilobaitas.lt';
+        return 'www.kaina24.lt';
     }
 
     public function getUrls(): array
@@ -19,7 +19,7 @@ class KilobaitasWebsite extends AbstractWebsite
         $urls = [];
 
         foreach ($this->getKeywords() as $keyword) {
-            $urls[] = self::getProtocol() . self::getHost() . '/paieskos_rezultatai/searchresult.aspx?q=' . $keyword;
+            $urls[] = self::getProtocol() . self::getHost() . '/search?q=' . $keyword;
         }
 
         return $urls;
@@ -27,27 +27,30 @@ class KilobaitasWebsite extends AbstractWebsite
 
     public function getProductsByResponse(ResponseInterface $response): array
     {
+        $products = [];
+
         $crawler = (new Crawler((string) $response->getBody()));
 
-        $rows = $crawler->filter('.products-grid.row');;
-        if ($rows->count() == 0) {
+        $main = $crawler->filter('.product-list-horisontal');
+        if ($main->count() === 0) {
             return [];
         }
 
+        $rows = $main
+            ->first()
+            ->children();
+
         $rows->each(
             function (Crawler $node) use (&$products) {
-                $url = self::getProtocol() . self::getProtocol();
-
-                $price = $node->filter('.products-grid.row')->filter('meta')->last()->attr('content');
-                $name = $node->filter('.products-grid.row')->filter('.item-title.line-clamp a')->text();;
-                $productUrl = $url . '/' . $node->filter('.products-grid.row')->filter('.item-title.line-clamp a')->attr('href');
-                $quantity = $node->filter('.products-grid.row')->filter('p.availability.in-stock')->filter('.btn-blue.item-code')->last()->text();
+                $price = $node->filter('.price')->first()->text();
+                $name = $node->filter('.name')->first()->text();
+                $url = $node->filter('.name')->first()->filter('a')->attr('href');
 
                 $product = new Product(
                     $name,
-                    $productUrl,
+                    $url,
                     $price,
-                    $quantity,
+                    '?',
                     self::getHost()
                 );
 

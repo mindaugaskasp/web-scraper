@@ -5,10 +5,10 @@ namespace App\Console;
 
 use App\Services\Logger\Logger;
 use App\Services\Mail\Mailer;
-use App\Services\ScanManager\Manager;
-use App\Services\ScanManager\ScanResultInterface;
+use App\Services\CrawlerManager\CrawlerManager;
 use App\Services\Websites\Data\Product;
 use Carbon\Carbon;
+use Psr\Http\Message\UriInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +16,7 @@ use Throwable;
 use Monolog\Logger as MonoLog;
 use Twig\Environment;
 
-class ScanWebCommand extends Command
+class CrawlCommand extends Command
 {
     protected static $defaultName = 'app:scan:web';
 
@@ -26,9 +26,9 @@ class ScanWebCommand extends Command
     private $twig;
     private $recipient;
 
-    private $scanIterations = 0;
+    private $iterations = 0;
 
-    public function __construct(Manager $manager, Logger $logger, Mailer $mailer, Environment $twig, string $emailRecipient)
+    public function __construct(CrawlerManager $manager, Logger $logger, Mailer $mailer, Environment $twig, string $emailRecipient)
     {
         parent::__construct();
         $this->manager = $manager;
@@ -38,24 +38,24 @@ class ScanWebCommand extends Command
         $this->recipient = $emailRecipient;
     }
 
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $output->writeln(sprintf('%s: Scanning. Iteration #%s.', Carbon::now()->toDateTimeString(),  ++$this->scanIterations));
+            $output->writeln(sprintf('%s: Crawling. Iteration #%s.', Carbon::now()->toDateTimeString(),  ++$this->iterations));
 
-            $result = $this->manager->scan();
-            if ($result->getProductCount() !== 0) {
-                $output->writeln(sprintf('%s: %s Products found.', Carbon::now()->toDateTimeString(), $result->getProductCount()));
-                $this->parseResult($result);
-                $this->playSound();
-            } else {
-                $output->writeln(sprintf('%s: No updates found yet.', Carbon::now()->toDateTimeString()));
-            }
+            $result = [];
+            $this->manager->crawl(
+                function (UriInterface $url, array $products) use (&$result, $output) {
+                    $output->writeln(sprintf('%s: Parsed website %s.', Carbon::now()->toDateTimeString(),  $url->getHost()));
+                    $result = array_merge($result, $products);
+                }
+            );
 
-            $rescanTime = $this->manager->getRescanTimeSeconds();
-            $output->writeln(sprintf('%s: Sleeping for %s seconds.', Carbon::now()->toDateTimeString(), $rescanTime));
-            sleep($rescanTime);
+            !empty($result)
+                ? $this->notifyAboutProducts($result)
+                : $output->writeln(sprintf('%s: No results found.', Carbon::now()->toDateTimeString()));
+
+            sleep(10);
 
             return $this->execute($input, $output);
         } catch (Throwable $e) {
@@ -66,9 +66,10 @@ class ScanWebCommand extends Command
         }
     }
 
-    private function parseResult(ScanResultInterface $result): void
+    private function notifyAboutProducts(array $products): void
     {
-        $products = $result->getProducts();
+        //$this->playSound();
+
         $html = $this->twig->render('index.html', ['products' => $products]);
 
         $this->mailer->send(

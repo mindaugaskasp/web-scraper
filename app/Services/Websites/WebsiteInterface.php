@@ -3,16 +3,13 @@ declare(strict_types=1);
 
 namespace App\Services\Websites;
 
-use Symfony\Component\DomCrawler\Crawler;
+use Psr\Http\Message\ResponseInterface;
 
 interface WebsiteInterface
 {
-    public function getUrl(): string;
     public function getUrls(): array;
-
     public function getKeywords(): array;
-    public function addKeyword(string $keyword): WebsiteInterface;
-    public function runCrawler(Crawler $crawler, callable $callback): void;
-    public function requiresMultipleRequests(): bool;
+    public function setKeywords(array $keywords): WebsiteInterface;
     public function isEnabled(): bool;
+    public function getProductsByResponse(ResponseInterface $response): array;
 }

@@ -4,37 +4,44 @@ declare(strict_types=1);
 namespace App\Services\Websites;
 
 use App\Services\Websites\Data\Product;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class SkytechWebsite extends AbstractWebsite
 {
-    private const BASE_URL = 'https://www.skytech.lt/';
+    public static function getHost(): string
+    {
+        return 'www.skytech.lt';
+    }
 
-    public function getUrl(): string
+    public function getUrls(): array
     {
         $keywords = implode('|', $this->getKeywords());
 
-        return self::BASE_URL
-            . 'search.php?sand=1&sort=5a&grp=1&keywords='
+        $url = self::getProtocol()
+            . self::getHost()
+            . '/search.php?sand=1&sort=5a&grp=1&keywords='
             . urlencode($keywords)
             . '&search_in_description=0&pagesize=500&f=86_85';
+
+        return [$url];
     }
 
-    public function runCrawler(Crawler $crawler, callable $callback): void
+    public function getProductsByResponse(ResponseInterface $response): array
     {
-        $rows = $crawler
+        $products = [];
+
+        $rows = (new Crawler((string) $response->getBody()))
             ->filter('.contentbox-center-wrap.nopad')
             ->filter('table')
-            ->filter('tr')
-        ;
+            ->filter('tr');
 
         $rows->each(
-            function (Crawler $node, int $i) use ($callback) {
+            function (Crawler $node, int $i) use (&$products) {
+                $children = $node->children();
                 if ($i === 0) {
                     return;
                 }
-
-                $children = $node->children();
                 if ($children->count() === 1) {
                     return;
                 }
@@ -45,11 +52,11 @@ class SkytechWebsite extends AbstractWebsite
                     return;
                 }
 
-                if (is_callable($callback)) {
-                    $callback($this->makeProductFromChildren($children));
-                }
+                $products[] = $this->makeProductFromChildren($children);
             }
         );
+
+        return $products;
     }
 
     private function makeProductFromChildren(Crawler $children): Product
@@ -57,7 +64,7 @@ class SkytechWebsite extends AbstractWebsite
         $name = $children->filter('.name')->first()->text();
         $price = $children->filter('strong')->first()->text();
         $relativeUrl = $children->filter('.name')->first()->filter('a')->attr('href');
-        $fullUrl = self::BASE_URL . $relativeUrl;
+        $fullUrl = self::getProtocol() . self::getHost() . '/' . $relativeUrl;
         $quantity = $children->filter('td.kiekis')->first()->text();
 
         return new Product(
@@ -65,7 +72,7 @@ class SkytechWebsite extends AbstractWebsite
             $fullUrl,
             $price,
             $quantity,
-            $children->getBaseHref()
+            self::getHost()
         );
     }
 }

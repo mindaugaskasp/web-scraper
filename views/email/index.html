@@ -12,10 +12,10 @@
             <tbody>
                 {% for product in products %}
                     <tr>
-                        <td>{{product.getName}}</td>
+                        <td><a href="{{product.getUrl}}">{{product.getName}}</a></td>
                         <td>{{product.getPrice}}</td>
                         <td>{{product.getQuantity}}</td>
-                        <td>{{product.getUrl}}</td>
+                        <td><a href="{{product.getWebsiteUrl}}">{{product.getWebsiteUrl}}</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -4,41 +4,40 @@ declare(strict_types=1);
 namespace App\Services\Websites;
 
 use App\Services\Websites\Data\Product;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 class VarleWebsite extends AbstractWebsite
 {
-    private const BASE_URL = 'https://www.varle.lt';
-
-    public function requiresMultipleRequests(): bool
+    public static function getHost(): string
     {
-        return true;
+        return 'www.varle.lt';
     }
 
     public function getUrls(): array
     {
         $urls = [];
 
-        // Note: for some reason Varle search breaks on more than one keyword at time
-        // so mitigate this we break down keywords into chunks of 2 and make several requests
         foreach ($this->getKeywords() as $keyword) {
-            $urls[] = self::BASE_URL . '/search/?q=' . $keyword;
+            $urls[] = self::getProtocol() . self::getHost() . '/search/?q=' . $keyword;
         }
 
         return $urls;
     }
 
-    public function runCrawler(Crawler $crawler, callable $callback): void
+    public function getProductsByResponse(ResponseInterface $response): array
     {
-        $productsFound = $crawler->filter('.count.total-numFound')->first()->text() !== '()';
-        if (!$productsFound) {
-            return;
+        $products = [];
+
+        $crawler = (new Crawler((string) $response->getBody()));
+        if ($crawler->filter('.count.total-numFound')->first()->text() == '()') {
+            return [];
         }
 
         $rows = $crawler->filter('.box1 .grid-item.product');
 
         $rows->each(
-            function (Crawler $node) use ($callback) {
+            function (Crawler $node) use (&$products) {
                 if ($node->filter('.price')->count() === 0) {
                     return;
                 }
@@ -50,18 +49,23 @@ class VarleWebsite extends AbstractWebsite
                     return;
                 }
 
-                $url = self::BASE_URL . $node->filter('.title')->first()->filter('a')->attr('href');
+                $url = self::getProtocol()
+                    . self::getHost()
+                    . '/'
+                    . $node->filter('.title')->first()->filter('a')->attr('href');
 
                 $product = new Product(
                     $name,
                     $url,
                     $price,
                     '?',
-                    $node->getBaseHref()
+                    self::getHost()
                 );
 
-                $callback($product);
+                $products[] = $product;
             }
         );
+
+        return $products;
     }
 }

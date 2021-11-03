@@ -5,3 +5,5 @@ storage/logs
 storage/cache
 .idea
 vendor
+node_modules
+yarn.lock

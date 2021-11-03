@@ -6,7 +6,7 @@ namespace App\Services\Mail;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
-class Mailer implements StockMailInterface
+class Mailer implements MailerInterface
 {
     private const DEFAULT_GOOGLE_SMTP_PORT = 465;
 

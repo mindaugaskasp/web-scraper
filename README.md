@@ -10,21 +10,12 @@ Note: tested on Ubuntu 20.04 only.
 2. Run `sudo apt install sox`
 3. Run `sudo apt install libsox-fmt-mp3`
 4. Run `sudo apt-get install sendmail`
-5. Install required dependencies by running command `composer install`
-6. Copy configuration file by running command `cp .env.example .env`
-7. Set your desired configuration presets for .env file
-8. Start web scan by running `php ./app app:scan:web `
+5. Run `yarn install`
+6. Install required dependencies by running command `composer install`
+7. Copy configuration file by running command `cp .env.example .env`
+8. Set your desired configuration presets for .env file
+9. Start web scan by running `php ./app app:scan:web `
 
-## Architecture
-
-1. app.php (script entry, bootstraps all application code and starts ScanWebCommand)
-2. ScanWebCommand (initiates scan)
-   1. Manager (iterates over website list and initiates crawling)
-      1. Websites[] (goes over website and fetches stock data)
-   2. Mailer
-   3. Logger
-   4. Notification sound
-   
 ## Dependencies
 
 1. PHP 7.2
@@ -42,6 +33,8 @@ Note: tested on Ubuntu 20.04 only.
 1. skytech.lt
 2. Varle.lt
 3. kilobaitas.lt
+4. Topocentras.lt
+5. Kaina24.lt
 
 ## How to add more stores support
 
