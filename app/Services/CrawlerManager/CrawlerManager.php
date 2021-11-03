@@ -20,6 +20,7 @@ class CrawlerManager extends AbstractManager
             ->ignoreRobots()
             ->setConcurrency(1)
             ->setMaximumCrawlCount(1)
+            ->setMaximumDepth(1)
             ->addCrawlObserver(
                 $this->crawlerObserver->setCrawledCallback($callback)
             );

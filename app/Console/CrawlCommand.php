@@ -55,7 +55,7 @@ class CrawlCommand extends Command
                 ? $this->notifyAboutProducts($result)
                 : $output->writeln(sprintf('%s: No results found.', Carbon::now()->toDateTimeString()));
 
-            sleep(10);
+            sleep(5);
 
             return $this->execute($input, $output);
         } catch (Throwable $e) {
@@ -68,7 +68,7 @@ class CrawlCommand extends Command
 
     private function notifyAboutProducts(array $products): void
     {
-        //$this->playSound();
+        $this->playSound();
 
         $html = $this->twig->render('index.html', ['products' => $products]);
 
