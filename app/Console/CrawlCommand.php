@@ -68,8 +68,6 @@ class CrawlCommand extends Command
 
     private function notifyAboutProducts(array $products): void
     {
-        $this->playSound();
-
         $html = $this->twig->render('index.html', ['products' => $products]);
 
         $this->mailer->send(
@@ -89,12 +87,5 @@ class CrawlCommand extends Command
                 )
             );
         }
-    }
-
-    private function playSound(): void
-    {
-        $pathToSoundFile = getcwd() . '/storage/notification.mp3';
-        $cmd = sprintf('play %s repeat 20 vol 100', $pathToSoundFile);
-        exec($cmd . " > /dev/null &");
     }
 }
